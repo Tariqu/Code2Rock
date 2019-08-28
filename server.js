@@ -3,12 +3,18 @@ var expressWs = require('express-ws');
 var pty = require('node-pty');
 const cors = require("cors");
 const fs = require('fs');
+const chokidar = require('chokidar');
 /**
  * Whether to use UTF8 binary transport.
  * (Must also be switched in client.ts)
  */
 const USE_BINARY_UTF8 = false;
 
+const watcher = chokidar.watch('.', {
+  ignored: /(^|[\/\\])\../,
+  persistent: true
+})
+// Add event listeners.
 if(Array.prototype.equals)
     console.warn("Overriding existing Array.prototype.equals. Possible causes: New API defines the method, there's a framework conflict or you've got double inclusions in your code.");
 // attach the .equals method to Array's prototype to call it on any array
@@ -44,6 +50,7 @@ function startServer() {
   var terminals = {},
       logs = {};
   app.use(cors());
+  app.use(express.json());
   app.post('/terminals', function (req, res) {
     const env = Object.assign({}, process.env);
     env['COLORTERM'] = 'truecolor';
@@ -136,17 +143,42 @@ function startServer() {
       delete logs[term.pid];
     });
   });
-  let oldFiles = fs.readdirSync(__dirname);
+  app.post("/api/files",(req,res)=>{
+    let sendArray = []
+    const path =  "\\"+req.body.folderName;
+    console.log(__dirname.toString()+path);
+    const completePath = __dirname.toString()+path+"\\";
+    let oldFiles = fs.readdirSync(completePath);
+    oldFiles.forEach(file=>{
+      try{
+        let stat = fs.lstatSync(completePath+file);
+        sendArray.push({filename:file,path:path,isDir:stat.isDirectory()});
+      }catch(e){}
+    
+      
+    })
+    res.json({
+      success:1,
+      data:sendArray
+    })
+  })
   app.ws("/api/files",(ws, req)=>{
-    setInterval(()=>{
-       let newFiles = fs.readdirSync(__dirname);
-       if(!oldFiles.equals(newFiles)){
-        newFiles.forEach(file=>{
-          ws.send(file);
-        })
-        oldFiles = newFiles;
-       }
-    },1000);
+    
+  watcher
+  .on('add', path => ws.send("add:"+path))
+  .on('change', path => ws.send("change:"+path))
+  .on('unlink', path => ws.send("unlink:"+path))
+  .on('addDir', path => ws.send("addDir:"+path))
+  .on('unlinkDir', path => ws.send("unlinkDir:"+path));
+    // setInterval(()=>{
+    //    let newFiles = fs.readdirSync(__dirname);
+    //    if(!oldFiles.equals(newFiles)){
+    //     newFiles.forEach(file=>{
+    //       ws.send(file);
+    //     })
+    //     oldFiles = newFiles;
+    //    }
+    // },1000);
   })
   var port = process.env.PORT || 3000;
 
