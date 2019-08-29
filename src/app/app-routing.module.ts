@@ -1,11 +1,12 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
+import { MasterComponent } from './master/master.component';
 
 
-const routes: Routes = [{
-  path:'editor',
-  loadChildren:()=> import('./editor/editor.module').then(m => m.EditorModule)
-}];
+const routes: Routes = [
+  { path: "", redirectTo: "IDE", pathMatch: "full" },
+  { path: "IDE", component: MasterComponent }
+];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],

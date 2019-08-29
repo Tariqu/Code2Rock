@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { DiffEditorModel } from 'ngx-monaco-editor';
 
 @Component({
   selector: 'app-ace-editor',
@@ -6,6 +7,11 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./ace-editor.component.scss']
 })
 export class AceEditorComponent implements OnInit {
+  editorOptions = { theme: 'vs-light', language: 'javascript' };
+  code: string = 'function x() {\nconsole.log("Hello world!");\n}';
+  options = {
+    theme: 'vs-light'
+  };
 
   constructor() { }
 
