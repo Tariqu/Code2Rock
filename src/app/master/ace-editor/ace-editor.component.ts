@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { DiffEditorModel } from 'ngx-monaco-editor';
+import { SharedService } from 'src/app/shared/services/shared.service';
 
 @Component({
   selector: 'app-ace-editor',
@@ -8,12 +9,16 @@ import { DiffEditorModel } from 'ngx-monaco-editor';
 })
 export class AceEditorComponent implements OnInit {
   editorOptions = { theme: 'vs-light', language: 'javascript' };
-  code: string = 'function x() {\nconsole.log("Hello world!");\n}';
+  code: string;
   options = {
     theme: 'vs-light'
   };
 
-  constructor() { }
+  constructor(private sharedService: SharedService) {
+    this.sharedService.getEditorData().subscribe(result => {
+      this.code = result;
+    })
+  }
 
   ngOnInit() {
   }

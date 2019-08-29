@@ -31,7 +31,7 @@ export class TerminalComponent implements OnInit, AfterViewInit {
           this.socket = new WebSocket(this.socketURL);
           this.socket.onopen = this.runRealTerminal();
           this.socket.onmessage = (event) => {
-            console.log(event.data);
+            // console.log(event.data);
           };
         });
       });

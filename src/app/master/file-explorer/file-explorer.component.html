@@ -1,21 +1,18 @@
-<!-- <div class="file_explorer">
+<div class="file_explorer">
   <mat-list>
-    <h3 mat-subheader>/</h3>
+    <span mat-subheader>/</span>
     <mat-list-item *ngFor="let file of files">
-      <mat-icon mat-list-icon>folder</mat-icon>
-      <h4 mat-line>{{file}}</h4>
+      <mat-icon mat-list-icon>{{file?.isDir?'folder':'note'}}</mat-icon>
+      <span mat-line (click)="getFileData(file)">{{file?.filename}}</span>
     </mat-list-item>
   </mat-list>
-</div> -->
+</div>
 
-<mat-tree [dataSource]="dataSource" [treeControl]="treeControl">
-  <!-- This is the tree node template for leaf nodes -->
+<!-- <mat-tree [dataSource]="dataSource" [treeControl]="treeControl">
   <mat-tree-node *matTreeNodeDef="let node" matTreeNodePadding>
-    <!-- use a disabled button to provide padding for tree leaf -->
     <button mat-icon-button disabled></button>
     {{node.name}}
   </mat-tree-node>
-  <!-- This is the tree node template for expandable nodes -->
   <mat-tree-node *matTreeNodeDef="let node;when: hasChild" matTreeNodePadding>
     <button mat-icon-button matTreeNodeToggle [attr.aria-label]="'toggle ' + node.name">
       <mat-icon class="mat-icon-rtl-mirror">
@@ -24,4 +21,4 @@
     </button>
     {{node.name}}
   </mat-tree-node>
-</mat-tree>
+</mat-tree> -->
