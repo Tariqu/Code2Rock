@@ -145,9 +145,21 @@ function startServer() {
   });
   app.post("/api/files",(req,res)=>{
     let sendArray = []
-    const path =  "\\"+req.body.folderName;
+    const path =  "/"+req.body.filePath;
     console.log(__dirname.toString()+path);
-    const completePath = __dirname.toString()+path+"\\";
+    const completePath = __dirname.toString()+path+"/";
+    let stat1 = fs.lstatSync(completePath);
+    if(stat1.isFile()){
+      const value = fs.readFileSync(completePath, 'utf8');
+      const filename = path.split('/').reverse();
+      res.json({
+        success:1,
+        data:[
+          {filename:filename[0],path:path,isDir:false,content:value}
+        ]
+      })
+      return;
+    }
     let oldFiles = fs.readdirSync(completePath);
     oldFiles.forEach(file=>{
       try{
