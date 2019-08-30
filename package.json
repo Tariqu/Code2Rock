@@ -9,11 +9,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "chokidar": "^3.0.2",
     "cors": "^2.8.5",
     "express": "^4.17.1",
-    "express-ws": "^4.0.0",
-    "node-pty": "^0.8.1"
+    "node-pty": "^0.8.1",
+    "socket.io": "^2.2.0"
   },
   "devDependencies": {
     "nodemon": "^1.19.1"
