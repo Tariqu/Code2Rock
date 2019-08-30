@@ -26,6 +26,7 @@
     "ngx-monaco-editor": "^7.0.0",
     "ngx-socket-io": "^3.0.1",
     "rxjs": "~6.4.0",
+    "socket.io-client": "^2.2.0",
     "tslib": "^1.10.0",
     "xterm": "^3.14.5",
     "xterm-addon-attach": "^0.1.0",

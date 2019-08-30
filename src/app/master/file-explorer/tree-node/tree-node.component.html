@@ -1,0 +1,9 @@
+<ul>
+    <li *ngFor="let file of files">
+        <span (click)="getFileData(file);file?.isDir ? file.showchild = !file.showchild : file.showchild = false">
+            <mat-icon>{{file?.isDir ? 'folder' : 'insert_drive_file'}}</mat-icon>
+            {{file?.filename}}
+        </span>
+        <app-tree-node *ngIf="file.children && file.showchild" [files]="file.children"></app-tree-node>
+    </li>
+</ul>

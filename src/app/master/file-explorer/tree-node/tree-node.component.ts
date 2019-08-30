@@ -1,27 +1,18 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { SharedService } from 'src/app/shared/services/shared.service';
 
 @Component({
-  selector: 'app-file-explorer',
-  templateUrl: './file-explorer.component.html',
-  styleUrls: ['./file-explorer.component.scss']
+  selector: 'app-tree-node',
+  templateUrl: './tree-node.component.html',
+  styleUrls: ['./tree-node.component.scss']
 })
-export class FileExplorerComponent implements OnInit {
-  private fileSocketURL = 'ws://localhost:3000/api/files';
-  private fileSocket;
-  files = [];
+export class TreeNodeComponent implements OnInit {
+  @Input() files = [];
 
   constructor(private httpService: SharedService) {
   }
 
   ngOnInit() {
-    this.getdir({ filePath: "" });
-  }
-
-  getdir(data: any) {
-    this.httpService.getDir(data).subscribe(result => {
-      this.files = [...this.mapData(result.data)]
-    })
   }
 
   mapData(files: any) {

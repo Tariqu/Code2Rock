@@ -14,6 +14,10 @@ export class SharedService {
     return this.http.post<any>("http://localhost:3000/api/files/", bodyData);
   }
 
+  saveFile(bodyData: any): Observable<any> {
+    return this.http.post<any>("http://localhost:3000/api/files/save", bodyData);
+  }
+
   setEditorData(data: any) {
     this.editorData.next(data);
   }

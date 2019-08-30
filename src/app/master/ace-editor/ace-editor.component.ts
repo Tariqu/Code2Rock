@@ -14,13 +14,33 @@ export class AceEditorComponent implements OnInit {
     theme: 'vs-light'
   };
 
+  file;
   constructor(private sharedService: SharedService) {
     this.sharedService.getEditorData().subscribe(result => {
-      this.code = result;
+      console.log(result)
+      this.code = result.content;
+      this.file = result.file;
     })
   }
 
   ngOnInit() {
+
   }
 
+  saveFile() {
+    setTimeout(() => {
+      this.saveFileApi();
+    }, 2000);
+  }
+
+  saveFileApi() {
+    let bodyData = {
+      filePath: this.file.path + '/' + this.file.filename,
+      content: this.code
+    }
+    console.log(bodyData)
+    this.sharedService.saveFile(bodyData).subscribe(result => {
+      console.log(result)
+    })
+  }
 }

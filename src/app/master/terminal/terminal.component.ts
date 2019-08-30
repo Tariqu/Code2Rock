@@ -1,7 +1,6 @@
-import { Component, OnInit, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
-import { Terminal } from 'xterm';
-import { AttachAddon } from 'xterm-addon-attach';
-import { FitAddon } from 'xterm-addon-fit';
+import { Component, ViewChild, ElementRef, AfterViewInit, OnInit } from '@angular/core';
+import { Terminal } from 'xterm'
+import io from 'socket.io-client';
 
 @Component({
   selector: 'app-terminal',
@@ -9,48 +8,37 @@ import { FitAddon } from 'xterm-addon-fit';
   styleUrls: ['./terminal.component.scss']
 })
 export class TerminalComponent implements OnInit, AfterViewInit {
+  private socket = io('http://localhost:3000');
   private term = new Terminal({
     cols: 100,
     rows: 10,
     cursorBlink: true
   });
-  private socketURL = 'ws://localhost:3000/terminals/';
-  private socket;
-  private fitAddon: FitAddon;
   @ViewChild('myTerminal', { static: false }) terminalContainer: ElementRef;
 
-  constructor() { }
   ngOnInit() {
-    this.fitAddon = new FitAddon();
-    setTimeout(() => {
-      this.updateTerminalSize();
-      console.log(this.term.cols)
-      fetch('http://127.0.0.1:3000/terminals?cols=' + 100 + '&rows=' + 10, { method: 'POST' }).then((res) => {
-        res.text().then((processId) => {
-          this.socketURL += processId;
-          this.socket = new WebSocket(this.socketURL);
-          this.socket.onopen = this.runRealTerminal();
-          this.socket.onmessage = (event) => {
-            // console.log(event.data);
-          };
-        });
-      });
-    }, 0);
   }
   ngAfterViewInit() {
     this.term.open(this.terminalContainer.nativeElement);
+    this.runFakeTerminal();
+    this.socket.on("connect", () => {
+      console.log("Connected...");
+    })
+    this.socket.on("message", (data) => {
+      this.term.write(data);
+    })
   }
-  updateTerminalSize(): void {
-    console.log("Update terminal...");
-    const cols = 100;
-    const rows = 10;
-    const width = cols.toString() + 'px';
-    const height = rows.toString() + 'px';
-    this.terminalContainer.nativeElement.style.width = width;
-    this.terminalContainer.nativeElement.style.height = height;
-    this.fitAddon.fit();
-  }
-  runRealTerminal(): void {
-    this.term.loadAddon(new AttachAddon(this.socket));
+  runFakeTerminal(): void {
+    this.term.onKey((e: { key: string, domEvent: KeyboardEvent }) => {
+      const ev = e.domEvent;
+      const printable = !ev.altKey && !ev.ctrlKey && !ev.metaKey;
+      if (ev.keyCode === 13) {
+        this.socket.emit("clientEnter", "\r");
+      } else if (ev.keyCode === 8) {
+        this.socket.emit("clientEnter", "\b \b");
+      } else if (printable) {
+        this.socket.emit("clientEnter", e.key);
+      }
+    });
   }
 }

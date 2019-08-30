@@ -13,6 +13,7 @@ import { FileExplorerComponent } from './master/file-explorer/file-explorer.comp
 import { AceEditorComponent } from './master/ace-editor/ace-editor.component';
 import { TerminalComponent } from './master/terminal/terminal.component';
 import { HttpClientModule } from '@angular/common/http';
+import { TreeNodeComponent } from './master/file-explorer/tree-node/tree-node.component';
 
 @NgModule({
   declarations: [
@@ -21,7 +22,8 @@ import { HttpClientModule } from '@angular/common/http';
     FileExplorerComponent,
     AceEditorComponent,
     TerminalComponent,
-    HeaderComponent
+    HeaderComponent,
+    TreeNodeComponent
   ],
   imports: [
     HttpClientModule,

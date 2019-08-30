@@ -5,3 +5,23 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+ul {
+    list-style-type: none;
+}
+
+li {
+    padding: 3px 0;
+}
+
+li span {
+    display: flex;
+    align-items: center;
+}
+li span mat-icon{
+    margin-right: 5px;
+}
+
+ul,li {
+    cursor: pointer;
+}
