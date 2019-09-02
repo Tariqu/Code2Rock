@@ -1,11 +1,13 @@
 import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
+import io from "socket.io-client";
 
 @Injectable({
   providedIn: 'root'
 })
 export class SharedService {
+  public socket = io('http://localhost:3000');
   private editorData = new Subject<any>();
 
   constructor(private http: HttpClient) { }

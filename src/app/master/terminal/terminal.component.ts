@@ -1,6 +1,6 @@
 import { Component, ViewChild, ElementRef, AfterViewInit, OnInit } from '@angular/core';
 import { Terminal } from 'xterm'
-import io from 'socket.io-client';
+import { SharedService } from 'src/app/shared/services/shared.service';
 
 @Component({
   selector: 'app-terminal',
@@ -8,7 +8,6 @@ import io from 'socket.io-client';
   styleUrls: ['./terminal.component.scss']
 })
 export class TerminalComponent implements OnInit, AfterViewInit {
-  private socket = io('http://localhost:3000');
   private term = new Terminal({
     cols: 100,
     rows: 10,
@@ -16,15 +15,20 @@ export class TerminalComponent implements OnInit, AfterViewInit {
   });
   @ViewChild('myTerminal', { static: false }) terminalContainer: ElementRef;
 
+  constructor(private sharedService: SharedService) {
+
+  }
+
   ngOnInit() {
   }
+
   ngAfterViewInit() {
     this.term.open(this.terminalContainer.nativeElement);
     this.runFakeTerminal();
-    this.socket.on("connect", () => {
+    this.sharedService.socket.on("connect", () => {
       console.log("Connected...");
     })
-    this.socket.on("message", (data) => {
+    this.sharedService.socket.on("message", (data) => {
       this.term.write(data);
     })
   }
@@ -32,12 +36,14 @@ export class TerminalComponent implements OnInit, AfterViewInit {
     this.term.onKey((e: { key: string, domEvent: KeyboardEvent }) => {
       const ev = e.domEvent;
       const printable = !ev.altKey && !ev.ctrlKey && !ev.metaKey;
-      if (ev.keyCode === 13) {
-        this.socket.emit("clientEnter", "\r");
+      if (ev.ctrlKey && ev.keyCode === 90) {
+        console.log("ctrl + z is pressed...");
+      } else if (ev.keyCode === 13) {
+        this.sharedService.socket.emit("clientEnter", "\r");
       } else if (ev.keyCode === 8) {
-        this.socket.emit("clientEnter", "\b \b");
+        this.sharedService.socket.emit("clientEnter", "\b \b");
       } else if (printable) {
-        this.socket.emit("clientEnter", e.key);
+        this.sharedService.socket.emit("clientEnter", e.key);
       }
     });
   }

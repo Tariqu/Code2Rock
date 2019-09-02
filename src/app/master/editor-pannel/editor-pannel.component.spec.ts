@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { AceEditorComponent } from './ace-editor.component';
+import { EditorPannelComponent } from './editor-pannel.component';
 
-describe('AceEditorComponent', () => {
-  let component: AceEditorComponent;
-  let fixture: ComponentFixture<AceEditorComponent>;
+describe('EditorPannelComponent', () => {
+  let component: EditorPannelComponent;
+  let fixture: ComponentFixture<EditorPannelComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ AceEditorComponent ]
+      declarations: [ EditorPannelComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(AceEditorComponent);
+    fixture = TestBed.createComponent(EditorPannelComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

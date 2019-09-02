@@ -1,0 +1,3 @@
+<ngx-monaco-editor class="editor_border" [options]="editorOptions" [(ngModel)]="file.content"
+    (ngModelChange)="codeEditorModelChanged.next($event)">
+</ngx-monaco-editor>

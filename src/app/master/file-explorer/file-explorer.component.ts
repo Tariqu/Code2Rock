@@ -7,15 +7,20 @@ import { SharedService } from 'src/app/shared/services/shared.service';
   styleUrls: ['./file-explorer.component.scss']
 })
 export class FileExplorerComponent implements OnInit {
-  private fileSocketURL = 'ws://localhost:3000/api/files';
-  private fileSocket;
   files = [];
 
   constructor(private httpService: SharedService) {
   }
 
   ngOnInit() {
-    this.getdir({ filePath: "" });
+    this.httpService.socket.on("connect", () => {
+      this.getdir({ filePath: "" });
+    });
+    this.httpService.socket.on("fileUpdate", (data) => {
+      if (data) {
+        this.getdir({ filePath: "" });
+      }
+    })
   }
 
   getdir(data: any) {
@@ -33,10 +38,10 @@ export class FileExplorerComponent implements OnInit {
 
   getFileData(file: string) {
     this.httpService.getDir({ filePath: file['path'] + '/' + file['filename'] }).subscribe(result => {
-      if (result.data.length && result.data[0].content) {
+      if (result.data.length && result.data[0].hasOwnProperty("content")) {
         file["content"] = result.data[0].content;
         let editorData = {
-          file: file,
+          file: result.data[0],
           content: result.data[0].content
         }
         this.httpService.setEditorData(editorData);

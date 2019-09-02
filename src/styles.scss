@@ -25,3 +25,20 @@ li span mat-icon{
 ul,li {
     cursor: pointer;
 }
+
+.editor_pannel .mat-tab-group .mat-tab-body-content {
+    overflow: hidden;
+}
+
+.editor_pannel .mat-tab-group .mat-tab-body-wrapper{
+    height: 100% !important;
+}
+
+.editor_pannel .mat-tab-group .mat-tab-label .mat-tab-label-content {
+    justify-content: space-between !important;
+    width: 100%;
+}
+
+.editor_pannel .mat-tab-group .mat-tab-label {
+    padding: 0 0 0 24px;
+}

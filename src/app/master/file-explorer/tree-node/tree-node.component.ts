@@ -24,7 +24,7 @@ export class TreeNodeComponent implements OnInit {
 
   getFileData(file: string) {
     this.httpService.getDir({ filePath: file['path'] + '/' + file['filename'] }).subscribe(result => {
-      if (result.data.length && result.data[0].content) {
+      if (result.data.length && result.data[0].hasOwnProperty("content")) {
         file["content"] = result.data[0].content;
         let editorData = {
           file: file,
