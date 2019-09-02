@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { DiffEditorModel } from 'ngx-monaco-editor';
 import { SharedService } from 'src/app/shared/services/shared.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-ace-editor',
@@ -13,8 +14,9 @@ export class AceEditorComponent implements OnInit {
   options = {
     theme: 'vs-light'
   };
-
   file;
+  subscriptions: Subscription = new Subscription();
+
   constructor(private sharedService: SharedService) {
     this.sharedService.getEditorData().subscribe(result => {
       console.log(result)
@@ -28,6 +30,7 @@ export class AceEditorComponent implements OnInit {
   }
 
   saveFile() {
+    this.subscriptions.unsubscribe();
     setTimeout(() => {
       this.saveFileApi();
     }, 2000);
@@ -39,8 +42,10 @@ export class AceEditorComponent implements OnInit {
       content: this.code
     }
     console.log(bodyData)
-    this.sharedService.saveFile(bodyData).subscribe(result => {
-      console.log(result)
-    })
+    this.subscriptions.add(
+      this.sharedService.saveFile(bodyData).subscribe(result => {
+        console.log(result)
+      })
+    )
   }
 }
