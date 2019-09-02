@@ -2,6 +2,8 @@ var express = require('express');
 var pty = require('node-pty');
 const cors = require("cors");
 const fs = require('fs');
+var path1 = require('path');
+const chokidar = require("chokidar");
 /**
  * Whether to use UTF8 binary transport.
  * (Must also be switched in client.ts)
@@ -11,6 +13,10 @@ function startServer() {
   var app = express();
   const server = require('http').createServer(app);
   const io = require('socket.io')(server);
+  const watcher = chokidar.watch(process.env.HOME+"/node", {
+    ignored: /(^|[\/\\])\../,
+    persistent: true
+  });
   io.on('connection', (client) => {
     const env = Object.assign({}, process.env);
     env['COLORTERM'] = 'truecolor';
@@ -20,7 +26,7 @@ function startServer() {
         name: 'xterm-256color',
         cols: cols || 100,
         rows: rows || 10,
-        cwd: env.PWD,
+        cwd: process.env.HOME,
         env: env,
         encoding: USE_BINARY_UTF8 ? null : 'utf8'
       });
@@ -32,16 +38,29 @@ function startServer() {
         // The WebSocket is not open, ignore
       }
     });
+    term.write('cd node\r');
+    term.write('cls\r');
     client.on("clientEnter", (msg) => {
       term.write(msg);
     })
+    watcher.on('add',()=>{
+      client.emit('fileUpdate',true);
+    }).on('addDir',()=>{
+      client.emit('fileUpdate',true);
+    }).on('unlink',()=>{
+      client.emit('fileUpdate',true);
+    }).on('unlinkDir',()=>{
+      client.emit('fileUpdate',true);
+    }).on('change',()=>{
+      client.emit('fileUpdate',true);
+    })
   });
   app.use(cors());
-  app.use(express.json());
+  app.use(express.json({limit:'5mb'}));
   app.post("/api/files", (req, res) => {
     let sendArray = []
     const path = "/" + req.body.filePath;
-    const completePath = __dirname.toString() + path + "/";
+    const completePath = process.env.HOME+'/node'.toString() + path + "/";
     let stat1 = fs.lstatSync(completePath);
     if (stat1.isFile()) {
       const value = fs.readFileSync(completePath, 'utf8');
@@ -49,7 +68,7 @@ function startServer() {
       res.json({
         success: 1,
         data: [
-          { filename: filename[0], path: path, isDir: false, content: value }
+          { filename: filename[0], path: path, isDir: false, content: value, fileType:path1.extname(filename[0]) }
         ]
       })
       return;
@@ -71,7 +90,7 @@ function startServer() {
   app.post('/api/files/save', (req, res) => {
     const path = "/" + req.body.filePath;
     const content = req.body.content;
-    const completePath = __dirname.toString() + path + "/";
+    const completePath = process.env.HOME+'/node'.toString() + path + "/";
     const err = fs.writeFileSync(completePath, content);
     if (!err) {
       res.json({
