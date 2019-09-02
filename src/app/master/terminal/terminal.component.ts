@@ -15,9 +15,7 @@ export class TerminalComponent implements OnInit, AfterViewInit {
   });
   @ViewChild('myTerminal', { static: false }) terminalContainer: ElementRef;
 
-  constructor(private sharedService: SharedService) {
-
-  }
+  constructor(private sharedService: SharedService) {}
 
   ngOnInit() {
   }
