@@ -13,12 +13,16 @@ function startServer() {
   var app = express();
   const server = require('http').createServer(app);
   const io = require('socket.io')(server);
-  const watcher = chokidar.watch("D:\\IDE_PROTOTYPE\\node_code\\candidates", {
+  const watcher = chokidar.watch(process.env.PWD + "/candidates", {
     ignored: /(^|[\/\\])\../,
     persistent: true
   });
   io.on('connection', (client) => {
     const env = Object.assign({}, process.env);
+    client.on("clientId",(data)=>{
+      console.log(data);
+      fs.mkdirSync('data')
+    })
     env['COLORTERM'] = 'truecolor';
     var cols = 100,
       rows = 10,
@@ -26,7 +30,7 @@ function startServer() {
         name: 'xterm-256color',
         cols: cols || 100,
         rows: rows || 10,
-        cwd: env.PWD,
+        cwd: env.PWD+"/candidates",
         env: env,
         encoding: USE_BINARY_UTF8 ? null : 'utf8'
       });
@@ -38,7 +42,6 @@ function startServer() {
         // The WebSocket is not open, ignore
       }
     });
-    term.write('cd candidates\r');
     term.write('cls\r');
     client.on("clientEnter", (msg) => {
       term.write(msg);
@@ -59,11 +62,16 @@ function startServer() {
   app.use(express.json({ limit: '5mb' }));
   app.post("/api/files", (req, res) => {
     let sendArray = []
-    const path = "/" + req.body.filePath;
-    const completePath = "D:\\IDE_PROTOTYPE\\node_code\\candidates" + path + "/";
-    let stat1 = fs.lstatSync(completePath);
+    let path = ""
+    const reqPath = req.body.filePath;
+    if(reqPath === ""){
+      path = __dirname + "/candidates";
+    }else{
+      path = reqPath;
+    }
+    let stat1 = fs.lstatSync(path);
     if (stat1.isFile()) {
-      const value = fs.readFileSync(completePath, 'utf8');
+      const value = fs.readFileSync(path, 'utf8');
       const filename = path.split('/').reverse();
       res.json({
         success: 1,
@@ -73,11 +81,12 @@ function startServer() {
       })
       return;
     }
-    let oldFiles = fs.readdirSync(completePath);
+    let oldFiles = fs.readdirSync(path);
     oldFiles.forEach(file => {
+      const pathWithFileName = path + "/"+file
       try {
-        let stat = fs.lstatSync(completePath + file);
-        sendArray.push({ filename: file, path: path, isDir: stat.isDirectory() });
+        let stat = fs.lstatSync(pathWithFileName);
+        sendArray.push({ filename: file, path: pathWithFileName, isDir: stat.isDirectory() });
       } catch (e) { }
 
 
@@ -88,10 +97,15 @@ function startServer() {
     })
   })
   app.post('/api/files/save', (req, res) => {
-    const path = "/" + req.body.filePath;
+    let path = ""
+    const reqPath = req.body.filePath;
+    if(reqPath === ""){
+      path = __dirname + "/candidates";
+    }else{
+      path = reqPath;
+    }
     const content = req.body.content;
-    const completePath = "D:\\IDE_PROTOTYPE\\node_code\\candidates" + path + "/";
-    const err = fs.writeFileSync(completePath, content);
+    const err = fs.writeFileSync(path, content);
     if (!err) {
       res.json({
         success: 1,
