@@ -1,8 +1,32 @@
-.file_explorer {
-    width: 250px;
-}
-
 .tree_class {
     margin-top: 1rem;
     padding: 0;
+}
+
+.tree_class li {
+    padding: 0 1rem;
+}
+
+.active_node {
+    background: #f3f3f3;
+}
+
+.folder_name {
+    background: #e8e8e8;
+    color: #757575;
+    padding: 0 1rem;
+    font-weight: 500;
+    display: flex;
+    justify-content: space-between;
+}
+
+.add_folder_file {
+    display: inherit;
+    align-items: center;
+}
+
+.add_folder_file mat-icon {
+    font-size: 18px;
+    height: 18px;
+    width: 22px;
 }

@@ -1,7 +1,14 @@
 <div class="file_explorer">
+  <div class="folder_name">
+    <span>0001</span>
+    <div class="add_folder_file">
+      <mat-icon>create_new_folder</mat-icon>
+      <mat-icon>note_add</mat-icon>
+    </div>
+  </div>
   <ul class="tree_class">
-    <li *ngFor="let file of files">
-      <span (click)="getFileData(file);file?.isDir ? file.showchild = !file.showchild : file.showchild = false">
+    <li *ngFor="let file of files; let i = index" [ngClass]="{'active_node':selectedFileIndex == i}">
+      <span (click)="getFileData(file, i);file?.isDir ? file.showchild = !file.showchild : file.showchild = false">
         <mat-icon>{{file?.isDir ? 'folder' : 'insert_drive_file'}}</mat-icon>
         {{file?.filename}}
       </span>

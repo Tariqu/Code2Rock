@@ -8,6 +8,7 @@ import { SharedService } from 'src/app/shared/services/shared.service';
 })
 export class FileExplorerComponent implements OnInit {
   files = [];
+  selectedFileIndex: number = 0;
 
   constructor(private httpService: SharedService) {
   }
@@ -36,7 +37,8 @@ export class FileExplorerComponent implements OnInit {
     return files;
   }
 
-  getFileData(file: string) {
+  getFileData(file: string, fileIndex: number) {
+    this.selectedFileIndex = fileIndex;
     this.httpService.getDir({ filePath: file['path'] + '/' + file['filename'] }).subscribe(result => {
       if (result.data.length && result.data[0].hasOwnProperty("content")) {
         file["content"] = result.data[0].content;
